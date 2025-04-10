@@ -1,0 +1,124 @@
+# ---- INSTALAÇÃO E CONFIGURAÇÃO DO APACHE ----
+- name: Enable mod_rewrite
+  apache2_module:
+    name: rewrite
+    state: present
+  notify: restart apache2
+
+# ---- BACKUPS ----
+- name: Cria diretório de backup
+  file:
+    path: /srv/confbk
+    state: directory
+    mode: '0755'
+
+- name: Backup do apache2.conf
+  copy:
+    src: /etc/apache2/apache2.conf
+    dest: /srv/confbk/apache2.conf
+    remote_src: yes
+
+- name: Backup do security.conf
+  copy:
+    src: /etc/apache2/conf-available/security.conf
+    dest: /srv/confbk/security.conf
+    remote_src: yes
+
+# ---- SOBRESCREVENDO CONFIGS COM CUSTOM ----
+- name: Copia apache2.conf customizado
+  copy:
+    src: /home/root/servidores/intranet/apache2/apache2.conf
+    dest: /etc/apache2/apache2.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart apache2
+
+- name: Copia security.conf customizado
+  copy:
+    src: /home/root/servidores/intranet/apache2/security.conf
+    dest: /etc/apache2/conf-available/security.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart apache2
+
+# ---- PERMISSÕES E GRUPOS ----
+- name: Altera grupo da pasta /var/www para www-data
+  file:
+    path: /var/www
+    group: www-data
+    recurse: yes
+
+- name: Altera permissões da pasta /var/www para 2775
+  file:
+    path: /var/www
+    mode: '2775'
+    recurse: yes
+
+# ---- VERIFICAÇÃO DE SERVIÇO ----
+- name: Verificar o status do Apache2
+  ansible.builtin.systemd:
+    name: apache2
+    state: started
+    enable: true
+  register: apache_status
+
+- name: Mostra status do Apache2
+  debug:
+    var: apache_status
+
+- name: Verificar listener servidor web
+  command: ss -nlt | grep ':80'
+  register: web_port_check
+  ignore_errors: yes
+  changed_when: false
+
+- name: Exibe mensagem se a porta 80 estiver ativa
+  debug:
+    msg: "Servidor web está ativo na porta 80!"
+  when: web_port_check.rc == 0
+
+- name: Exibe mensagem se a porta 80 estiver inativa
+  debug:
+    msg: "Servidor web NÃO está escutando na porta 80!"
+  when: web_port_check.rc != 0
+
+# ---- REPOSITÓRIO TRAVELGO ----
+- name: Clona o repositório travelgo
+  git:
+    repo: 'https://github.com/flrobson77/travelgo.git'
+    dest: /var/www/html/travelgo
+    update: yes
+
+- name: Altera dono do diretório travelgo para travelgo:www-data
+  file:
+    path: /var/www/html/travelgo
+    owner: travelgo
+    group: www-data
+    recurse: yes
+
+- name: Altera permissão do diretório travelgo para 2775
+  file:
+    path: /var/www/html/travelgo
+    mode: '2775'
+    recurse: yes
+
+# ---- CONFIGURAÇÃO DO VIRTUALHOST ----
+- name: Configurando VirtualHost
+  copy:
+    src: /home/root/servidores/intranet/apache2/modelo.conf
+    dest: /etc/apache2/sites-available/travelgo.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Substitui 'modelo' por 'travelgo' no arquivo de configuração
+  replace:
+    path: /etc/apache2/sites-available/travelgo.conf
+    regexp: '\bmodelo\b'
+    replace: 'travelgo'
+
+- name: Ativa o VirtualHost travelgo
+  command: a2ensite travelgo.conf
+  notify: restart apache2

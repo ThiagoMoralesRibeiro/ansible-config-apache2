@@ -1,0 +1,17 @@
+- name: Add user travelgo
+  user:
+    name: travelgo
+    shell: /bin/bash
+    home: /home/travelgo
+
+- name: Ensure the group www-data exists
+  group:
+    name: www-data
+    state: present
+
+- name: Add travelgo to www-data group
+  user:
+    name: travelgo
+    groups: www-data
+    append: yes
+
