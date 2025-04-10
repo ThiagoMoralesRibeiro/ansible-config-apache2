@@ -26,4 +26,8 @@ roles/
 ├── php/
 └── user/
 
+
+🚀 Como executar
+
 ansible-playbook site.yml --ask-become-pass
+
