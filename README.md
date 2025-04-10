@@ -19,8 +19,25 @@ A estrutura foi separada em roles para melhor organização, facilitando a manut
 
 ## 🛠 Estrutura do Projeto
 
-. ├── site.yml └── roles ├── apache │ └── tasks │ └── main.yml ├── apache_config │ ├── tasks │ │ └── main.yml │ └── handlers │ └── main.yml ├── php │ └── tasks │ └── main.yml └── user └── tasks └── main.yml
-
+.
+├── ansible.cfg
+├── hosts
+├── roles
+│   ├── apache_config
+│   │   ├── handler
+│   │   │   └── main.yml
+│   │   └── tasks
+│   │       └── main.yml
+│   ├── apache_install
+│   │   └── tasks
+│   │       └── main.yml
+│   ├── php
+│   │   └── tasks
+│   │       └── main.yml
+│   └── user
+│       └── tasks
+│           └── main.yml
+└── site.yml
 
 🚀 Como executar
 
