@@ -17,14 +17,9 @@ Este repositório contém um playbook Ansible completo e modularizado para:
 
 A estrutura foi separada em roles para melhor organização, facilitando a manutenção e reutilização em diferentes ambientes.
 
-🛠 Estrutura do Projeto
+## 🛠 Estrutura do Projeto
 
-site.yml
-roles/
-├── apache/
-├── apache_config/
-├── php/
-└── user/
+. ├── site.yml └── roles ├── apache │ └── tasks │ └── main.yml ├── apache_config │ ├── tasks │ │ └── main.yml │ └── handlers │ └── main.yml ├── php │ └── tasks │ └── main.yml └── user └── tasks └── main.yml
 
 
 🚀 Como executar
