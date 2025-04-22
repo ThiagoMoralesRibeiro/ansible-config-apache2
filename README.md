@@ -42,5 +42,5 @@ A estrutura foi separada em roles para melhor organização, facilitando a manut
 
 🚀 Como executar
 
-ansible-playbook site.yml --ask-become-pass
+```ansible-playbook site.yml --ask-become-pass```
 
