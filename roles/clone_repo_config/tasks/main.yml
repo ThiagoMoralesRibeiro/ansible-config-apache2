@@ -1,4 +1,4 @@
-name: Clona o repositório servidores
+- name: Clona o repositório servidores
   git:
     repo: 'https://github.com/flrobson77/servidores.git'
     dest: /root
