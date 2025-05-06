@@ -1,6 +1,7 @@
 - hosts: webservers
   become: yes
   roles:
+    - clone_repo_config
     - apache_install
     - php
     - user
