@@ -27,7 +27,7 @@
 # ---- SOBRESCREVENDO CONFIGS COM CUSTOM ----
 - name: Copia apache2.conf customizado
   copy:
-    src: /home/root/servidores/intranet/apache2/apache2.conf
+    src: /root/servidores/intranet/apache2/apache2.conf
     dest: /etc/apache2/apache2.conf
     owner: root
     group: root
@@ -36,7 +36,7 @@
 
 - name: Copia security.conf customizado
   copy:
-    src: /home/root/servidores/intranet/apache2/security.conf
+    src: /root/servidores/intranet/apache2/security.conf
     dest: /etc/apache2/conf-available/security.conf
     owner: root
     group: root
@@ -107,7 +107,7 @@
 # ---- CONFIGURAÇÃO DO VIRTUALHOST ----
 - name: Configurando VirtualHost
   copy:
-    src: /home/root/servidores/intranet/apache2/modelo.conf
+    src: /root/servidores/intranet/apache2/modelo.conf
     dest: /etc/apache2/sites-available/travelgo.conf
     owner: root
     group: root
