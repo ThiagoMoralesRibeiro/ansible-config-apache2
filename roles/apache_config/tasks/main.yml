@@ -56,6 +56,11 @@
     mode: '2775'
     recurse: yes
 
+- name: Remove o arquivo index.html
+  ansible.builtin.file:
+    path: /var/www/html/index.html
+    state: absent
+
 # ---- VERIFICAÇÃO DE SERVIÇO ----
 
 - name: Verificar o status do Apache2
