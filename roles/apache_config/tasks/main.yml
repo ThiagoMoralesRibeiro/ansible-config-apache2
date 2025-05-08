@@ -27,7 +27,7 @@
 # ---- SOBRESCREVENDO CONFIGS COM CUSTOM ----
 - name: Copia apache2.conf customizado
   copy:
-    src: /root/servidores/intranet/apache2/apache2.conf
+    src: apache2.conf
     dest: /etc/apache2/apache2.conf
     owner: root
     group: root
@@ -36,7 +36,7 @@
 
 - name: Copia security.conf customizado
   copy:
-    src: /root/servidores/intranet/apache2/security.conf
+    src:  security.conf
     dest: /etc/apache2/conf-available/security.conf
     owner: root
     group: root
@@ -57,39 +57,43 @@
     recurse: yes
 
 # ---- VERIFICAÇÃO DE SERVIÇO ----
+
 - name: Verificar o status do Apache2
   ansible.builtin.systemd:
     name: apache2
     state: started
-    enable: true
+    enabled: true
   register: apache_status
+
 
 - name: Mostra status do Apache2
   debug:
     var: apache_status
 
+
 - name: Verificar listener servidor web
-  command: ss -nlt | grep ':80'
+  command: ss -nlt | grep ':80' || echo "Port 80 is not open"
   register: web_port_check
-  ignore_errors: yes
+  ignore_errors: true
   changed_when: false
 
-- name: Exibe mensagem se a porta 80 estiver ativa
+- name: Mostrar resultado do listener
   debug:
-    msg: "Servidor web está ativo na porta 80!"
-  when: web_port_check.rc == 0
+    var: web_port_check.stdout
 
-- name: Exibe mensagem se a porta 80 estiver inativa
-  debug:
-    msg: "Servidor web NÃO está escutando na porta 80!"
-  when: web_port_check.rc != 0
 
 # ---- REPOSITÓRIO TRAVELGO ----
-- name: Clona o repositório travelgo
+
+- name: Marcar repositório como seguro no Git
+  command: git config --global --add safe.directory /var/www/html/travelgo
+  become: true  
+
+- name: Clonar repositório
   git:
-    repo: 'https://github.com/flrobson77/travelgo.git'
+    repo: https://github.com/flrobson77/travelgo.git
     dest: /var/www/html/travelgo
-    update: yes
+    version: main
+  become: true  
 
 - name: Altera dono do diretório travelgo para travelgo:www-data
   file:
@@ -107,7 +111,7 @@
 # ---- CONFIGURAÇÃO DO VIRTUALHOST ----
 - name: Configurando VirtualHost
   copy:
-    src: /root/servidores/intranet/apache2/modelo.conf
+    src: modelo.conf
     dest: /etc/apache2/sites-available/travelgo.conf
     owner: root
     group: root
